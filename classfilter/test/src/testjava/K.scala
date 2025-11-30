@@ -1,0 +1,5 @@
+package testjava
+
+class K {
+
+}

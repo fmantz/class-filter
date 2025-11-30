@@ -1,0 +1,50 @@
+//| mill-version: 1.1.2
+//| mill-jvm-version: temurin:21
+package build
+import mill.*
+import scalalib.*
+import publish.*
+import mill.util.BuildInfo.millVersion
+
+object classfilter extends ScalaModule, PublishModule {
+
+  def scalaVersion = "3.7.1"
+
+  object Dependencies {
+    val MainArgs = "0.7.7"
+    val ApacheBcel = "6.11.0"
+    val ApacheCommonsIO = "2.21.0"
+    val ApacheCommonsLang = "3.19.0"
+  }
+
+  def mvnDeps = Seq(
+    mvn"org.apache.bcel:bcel:${Dependencies.ApacheBcel}",
+    mvn"commons-io:commons-io:${Dependencies.ApacheCommonsIO}",
+    mvn"org.apache.commons:commons-lang3:${Dependencies.ApacheCommonsLang}"
+  )
+
+  // important:
+  // LocalVariable Tables are required to compute the TransitiveHull correctly:
+  // https://docs.oracle.com/en/java/javacard/3.1/guide/setting-java-compiler-options.html
+  def javacOptions = Seq("-g")
+
+  object test extends ScalaTests {
+    def mvnDeps = Seq(
+      mvn"com.lihaoyi::utest:0.8.9"
+    )
+    def testFramework = "utest.runner.Framework"
+  }
+
+  // Publishing Config
+  def publishVersion = "0.1.0"
+
+  def pomSettings: Task.Simple[PomSettings] = PomSettings(
+    description = "A simple Scala library for detecting dependent classes using Apache BCEL. The compact library originated from a private learning exercise.",
+    organization = "io.github.fmantz",
+    url = "https://github.com/fmantz/class-filter",
+    licenses = Seq(License.MIT),
+    versionControl = VersionControl.github("fmantz", "class-filter"),
+    developers = Seq(Developer("fmantz", "Florian Mantz", "https://github.com/fmantz"))
+  )
+
+}

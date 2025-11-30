@@ -1,0 +1,5 @@
+package testscala
+
+class J {
+
+}
